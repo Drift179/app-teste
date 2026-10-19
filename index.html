@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Downloads - Firebase</title>
+    <!-- Importando fontes e ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="file"] {
+            background: #f8fafc;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Lista de arquivos */
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            border: 1px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 8px;
+            gap: 12px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            overflow: hidden;
+        }
+
+        .file-icon {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .file-details h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 350px;
+        }
+
+        .file-details span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .download-btn {
+            background-color: #10b981;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .download-btn:hover {
+            background-color: #059669;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .download-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .file-details h3 {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Repositório de Arquivos</h1>
+            <p>Envie e baixe qualquer tipo de arquivo de forma rápida e segura.</p>
+        </header>
+
+        <!-- Painel de Envio -->
+        <div class="card">
+            <h2><i class="fa-solid fa-cloud-arrow-up"></i> Enviar Novo Arquivo</h2>
+            <div class="form-group">
+                <label for="fileInput">Selecione o arquivo:</label>
+                <input type="file" id="fileInput">
+            </div>
+            <div class="form-group">
+                <label for="fileNameInput">Nome personalizado para exibição:</label>
+                <input type="text" id="fileNameInput" placeholder="Ex: Relatório Final v2.pdf">
+            </div>
+            <button id="uploadBtn" onclick="uploadFile()">
+                <i class="fa-solid fa-upload"></i> Enviar para o Firebase
+            </button>
+        </div>
+
+        <!-- Lista de Downloads -->
+        <div class="card">
+            <h2><i class="fa-solid fa-folder-open"></i> Arquivos Disponíveis</h2>
+            <div id="fileListContainer" class="file-list">
+                <div class="loading">Carregando arquivos...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts do Firebase (SDK Modular v9/v10 via CDN) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+        import { getDatabase, ref as dbRef, push, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Sua configuração do Firebase fornecida
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3Q2P6lch9XxxYlJoEsdqqwwt3KBJgpFc",
+            authDomain: "projeto-a08cb.firebaseapp.com",
+            databaseURL: "https://projeto-a08cb-default-rtdb.firebaseio.com",
+            projectId: "projeto-a08cb",
+            storageBucket: "projeto-a08cb.firebasestorage.app",
+            messagingSenderId: "996658403778",
+            appId: "1:996658403778:web:665022027f7d0e8b9a5e5b",
+            measurementId: "G-2SHL9B8XYC"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+        const database = getDatabase(app);
+
+        const fileInput = document.getElementById('fileInput');
+        const fileNameInput = document.getElementById('fileNameInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileListContainer = document.getElementById('fileListContainer');
+
+        // Preencher automaticamente o campo de nome com o nome original do arquivo ao selecionar
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                if (!fileNameInput.value) {
+                    fileNameInput.value = fileInput.files[0].name;
+                }
+            }
+        });
+
+        window.uploadFile = async function() {
+            const file = fileInput.files[0];
+            const customName = fileNameInput.value.trim();
+
+            if (!file) {
+                alert("Por favor, selecione um arquivo primeiro.");
+                return;
+            }
+
+            if (!customName) {
+                alert("Por favor, defina um nome para o arquivo.");
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+
+            try {
+                // 1. Criar referência no Storage do Firebase
+                const fileUniqueName = Date.now() + "_" + file.name;
+                const fileReference = storageRef(storage, 'uploads/' + fileUniqueName);
+
+                // 2. Fazer o upload do arquivo (qualquer tamanho/tipo)
+                const snapshot = await uploadBytes(fileReference, file);
+                
+                // 3. Obter a URL pública de download do arquivo
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                // 4. Salvar os metadados (nome personalizado e URL) no Realtime Database
+                const newFileRef = push(dbRef(database, 'arquivos'));
+                await set(newFileRef, {
+                    name: customName,
+                    url: downloadURL,
+                    createdAt: Date.now()
+                });
+
+                alert("Arquivo enviado com sucesso!");
+                fileInput.value = "";
+                fileNameInput.value = "";
+            } catch (error) {
+                console.error("Erro no upload:", error);
+                alert("Erro ao enviar o arquivo. Verifique o console.");
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fa-solid fa-upload"></i> Enviar para o Firebase';
+            }
+        };
+
+        // Escutar alterações na lista de arquivos em tempo real (para todos os usuários)
+        const filesDbRef = dbRef(database, 'arquivos');
+        onValue(filesDbRef, (snapshot) => {
+            const data = snapshot.val();
+            fileListContainer.innerHTML = "";
+
+            if (!data) {
+                fileListContainer.innerHTML = `<div class="loading">Nenhum arquivo enviado ainda.</div>`;
+                return;
+            }
+
+            // Converter objeto do banco em array e ordenar do mais recente para o mais antigo
+            const filesArray = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            })).sort((a, b) => b.createdAt - a.createdAt);
+
+            filesArray.forEach(file => {
+                const itemHTML = `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-icon"><i class="fa-solid fa-file-arrow-down"></i></div>
+                            <div class="file-details">
+                                <h3>${escapeHtml(file.name)}</h3>
+                                <span>Enviado em: ${new Date(file.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <a href="${file.url}" target="_blank" class="download-btn" download>
+                            <i class="fa-solid fa-download"></i> Baixar
+                        </a>
+                    </div>
+                `;
+                fileListContainer.innerHTML += itemHTML;
+            });
+        });
+
+        // Função de segurança básica contra injeção de HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+    </script>
+</body>
+</html>
